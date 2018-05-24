@@ -1,0 +1,29 @@
+---
+- hosts: "{{ host }}"
+  tasks:
+  - name: INSTALANDO O NGINX
+    apt:
+     name: nginx
+     state: present
+     update_cache: yes
+    register: nginx_y
+  - name: CRIANDO O ARQUIVO INDEX HTML
+    when: nginx_y is succeeded
+    file:
+     path: /var/www/html/index.html
+     state: touch
+  - name: CRIANDO USUARIO APPWEB
+    user:
+     name: appweb
+     state: present
+  - name: GERANDO CONTEUDO PARA O ARQUIVO INDEX.HTML
+    lineinfile:
+     path: /var/www/html/index.html			
+     line: "DEU CERTOOOO MINHA APP"
+     state: present
+    notify:
+    - nginx_r
+
+  handlers:
+  - name: nginx_r
+    service: name=nginx state=restarted
